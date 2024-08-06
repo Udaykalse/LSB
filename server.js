@@ -1,25 +1,24 @@
+// server.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 
 const app = express();
-
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'], 
-  methods: ['GET', 'POST'],
-  credentials: true
-}));
+app.use(cors());
 
 const server = http.createServer(app);
-
 const io = socketIo(server, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: 'http://localhost:5173', // URL of your frontend
     methods: ['GET', 'POST'],
-    credentials: true
-  }
+  },
 });
+
+// CORS settings to allow requests from the frontend
+app.use(cors({
+  origin: 'http://localhost:5173' // URL of your frontend
+}));
 
 let currentPoll = null;
 let pollResults = {
@@ -27,7 +26,10 @@ let pollResults = {
   results: [],
 };
 
+// Handling socket connections
 io.on('connection', (socket) => {
+  console.log('A user connected');
+
   socket.on('createPoll', (poll) => {
     currentPoll = poll;
     pollResults = {
@@ -56,9 +58,12 @@ io.on('connection', (socket) => {
       io.emit('pollResults', pollResults);
     }
   });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
 });
 
 server.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
-// !
