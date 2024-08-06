@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -10,14 +9,13 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:5173', // URL of your frontend
+    // origin: 'http://localhost:5173', 
     methods: ['GET', 'POST'],
   },
 });
 
-// CORS settings to allow requests from the frontend
 app.use(cors({
-  origin: 'http://localhost:5173' // URL of your frontend
+  origin: 'http://localhost:5173' 
 }));
 
 let currentPoll = null;
@@ -26,7 +24,6 @@ let pollResults = {
   results: [],
 };
 
-// Handling socket connections
 io.on('connection', (socket) => {
   console.log('A user connected');
 
