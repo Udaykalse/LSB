@@ -9,13 +9,13 @@ app.use(cors());
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    // origin: 'http://localhost:5173', 
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
 
 app.use(cors({
-  origin: '*' 
+  origin: '*'
 }));
 
 let currentPoll = null;
@@ -48,10 +48,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('submitAnswer', (answer) => {
-    const result = pollResults.results.find((res) => res.answer === answer.answer);
+    const result = pollResults.results.find((res) => res.answer === answer);
     if (result) {
       result.count += 1;
-      result.percentage = ((result.count / pollResults.results.length) * 100).toFixed(2);
+      result.percentage = ((result.count / pollResults.results.reduce((acc, res) => acc + res.count, 0)) * 100).toFixed(2);
       io.emit('pollResults', pollResults);
     }
   });
